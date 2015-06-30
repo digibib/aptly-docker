@@ -1,35 +1,46 @@
 .PHONY: all
 
-all: build run
+all: reload build run
+
+reload: halt up provision
+
+halt:
+	vagrant halt
+
+up:
+	vagrant up
+
+provision:
+	vagrant provision
 
 build:
 	@echo "======= BUILDING APTLY IMAGE ======\n"
-	sudo docker build -t digibib/aptly ./latest
+	vagrant ssh -c 'docker build -t digibib/aptly /vagrant/latest'
 
 stop: 
 	@echo "======= STOPPING APTLY CONTAINER ======\n"
-	sudo docker stop aptly_docker || true
+	vagrant ssh -c 'docker stop aptly_docker' || true
 
 delete: stop
 	@echo "======= DELETING APTLY CONTAINER ======\n"
-	sudo docker rm aptly_docker || true
+	vagrant ssh -c 'docker rm aptly_docker' || true
 
 REPO ?= /tmp/aptly
 run: delete     ## start new aptly_docker -- args: REPO
 	@echo "======= RUNNING APTLY CONTAINER ======\n"
-	sudo docker run --name aptly_docker \
+	vagrant ssh -c 'docker run --name aptly_docker \
 	-v "$(REPO):/aptly" \
-	-t digibib/aptly:latest || echo "aptly_docker container already running, please 'make delete' first"
+	-t digibib/aptly:latest' || echo "aptly_docker container already running, please 'make delete' first"
 
 logs-f:
-	sudo docker logs -f aptly_docker
+	vagrant ssh -c 'docker logs -f aptly_docker'
 
 login:	# needs EMAIL, PASSWORD, USERNAME
-	sudo docker login --email=$(EMAIL) --username=$(USERNAME) --password=$(PASSWORD)
+	vagrant ssh -c 'docker login --email=$(EMAIL) --username=$(USERNAME) --password=$(PASSWORD)''
 
 tag = "$(shell git rev-parse HEAD)"
 push:
 	@echo "======= PUSHING APTLY IMAGE ======\n"
-	sudo docker tag digibib/aptly digibib/aptly:$(tag)
-	sudo docker push digibib/aptly
+	vagrant ssh -c 'docker tag digibib/aptly digibib/aptly:$(tag)'
+	vagrant ssh -c 'docker push digibib/aptly'
 

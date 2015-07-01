@@ -28,7 +28,7 @@ delete: stop
 REPO ?= /tmp/aptly
 run: delete     ## start new aptly_docker -- args: REPO
 	@echo "======= RUNNING APTLY CONTAINER ======\n"
-	vagrant ssh -c 'docker run --name aptly_docker \
+	vagrant ssh -c 'docker run -d --name aptly_docker \
 	-v "$(REPO):/aptly" \
 	-t digibib/aptly:latest' || echo "aptly_docker container already running, please 'make delete' first"
 

@@ -36,7 +36,7 @@ logs-f:
 	vagrant ssh -c 'docker logs -f aptly_docker'
 
 login:	# needs EMAIL, PASSWORD, USERNAME
-	vagrant ssh -c 'docker login --email=$(EMAIL) --username=$(USERNAME) --password=$(PASSWORD)''
+	vagrant ssh -c 'docker login --email=$(EMAIL) --username=$(USERNAME) --password=$(PASSWORD)'
 
 tag = "$(shell git rev-parse HEAD)"
 push:

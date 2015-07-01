@@ -10,9 +10,4 @@ Vagrant.configure("2") do |config|
       args: "-t digibib/aptly"
   end
 
-  config.vm.provision :docker do |d|
-    d.run "digibib/aptly",
-      args: "-p 8080:8080 \
-            -v /vagrant/aptly:/aptly"
-  end
 end
